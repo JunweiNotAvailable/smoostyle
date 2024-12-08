@@ -1,7 +1,5 @@
 <template>
-  <Navbar/>
   <router-view/>
-  <Footer/>
 </template>
 
 <script>
@@ -9,6 +7,7 @@ import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
+import './assets/global.css';
 
 export default {
   name: 'App',
@@ -35,10 +34,6 @@ export default {
 </script>
 
 <style>
-body {
-  margin: 0;
-  font-family: sans-serif;
-}
 #app {
   display: flex;
   flex-direction: column;

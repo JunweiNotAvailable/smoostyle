@@ -1,0 +1,16 @@
+:root {
+  --app-color: #4ca;
+}
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+main {
+  flex: 1;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
