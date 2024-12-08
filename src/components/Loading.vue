@@ -15,7 +15,7 @@ export default {
   height: 24px;
   border: 2px solid #c8c8c8;
   border-radius: 50%;
-  animation: spin 1.6s linear infinite;
+  animation: spin 1.2s linear infinite;
 }
 @keyframes spin {
   0% { transform: rotate(0deg); }

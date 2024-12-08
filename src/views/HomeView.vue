@@ -1,7 +1,6 @@
 <template>
   <LoadingView v-if="isLoading"/>
   <LandingView v-else-if="!hasUser"/>
-  
 </template>
 
 <script lang="ts">
