@@ -1,20 +1,18 @@
 <template>
-  <div class="browser-view">
-    
-  </div>
+  <div class="design-view"></div>
 </template>
 
 <script>
 export default {
-  name: 'BrowserView',
+  name: 'DesignView',
 }
 </script>
 
 <style scoped>
-.browser-view {
-  display: flex;
+.design-view {
   width: 100%;
   height: 100%;
+  display: flex;
   overflow: hidden;
 }
 </style>

@@ -77,7 +77,7 @@ export default {
   name: 'LoginForm',
   props: ['closeLoginForm'],
   components: { Loading },
-  setup(props) {
+  setup(props: any) {
     const email = ref('');
     const password = ref('');
     const confirmationCode = ref('');

@@ -1,6 +1,7 @@
 <template>
   <LoadingView v-if="isLoading"/>
-  <BrowserView v-else-if="hasUser"/>
+  <!-- <BrowserView v-else-if="hasUser"/> -->
+  <DesignView v-else-if="hasUser"/>
   <LandingView v-else/>
 </template>
 
@@ -10,10 +11,11 @@ import { useStore } from 'vuex';
 import LoadingView from '../LoadingView.vue';
 import LandingView from './LandingView.vue';
 import BrowserView from './BrowserView.vue';
+import DesignView from '../Design/DesignView.vue';
 
 export default defineComponent({
   name: 'HomeView',
-  components: { LoadingView, LandingView, BrowserView },
+  components: { LoadingView, LandingView, BrowserView, DesignView },
   setup() {
     const store = useStore();
     const isLoading = computed(() => store.getters.isUserLoading);
