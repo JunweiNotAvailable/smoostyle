@@ -3,6 +3,7 @@
   --app-color-hover: #3b9;
   --app-color-disabled: #cee;
   --navbar-height: 64px;
+  --sidebar-width: 240px;
 }
 * {
   box-sizing: border-box;
@@ -21,14 +22,29 @@ button {
 button:disabled {
   cursor: default;
 }
+input, textarea {
+  border: 1px solid #eee;
+  outline: none;
+}
+input:focus, textarea:focus {
+  border-color: #000;
+}
 
 
+.flex {
+  display: flex;
+}
 .flex-1 {
   flex: 1;
 }
 .flex-center {
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
   align-items: center;
 }
 .flex-between {
