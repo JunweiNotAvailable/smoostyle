@@ -1,10 +1,5 @@
-// Environment variables
-export const config = {
-  API_URL: process.env.VUE_APP_API_URL,
-  API_KEY: process.env.VUE_APP_ACCESS_KEY
-}
-
 // Constants
+
 export const constants = {
   appName: 'Smoostyle',
   databases: {
@@ -13,3 +8,7 @@ export const constants = {
 }
 
 // Functions
+
+export const getRandomString = (length: number) => {
+  return Array.from({ length }, () => Math.random() < 0.5 ? Math.random().toString(36).charAt(2) : Math.random().toString(36).charAt(2).toUpperCase()).join('');
+}

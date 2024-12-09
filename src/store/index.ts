@@ -1,5 +1,6 @@
 import { UserModel } from '@/types/User'
-import { config, constants } from '@/utils/helpers'
+import { constants } from '@/utils/helpers'
+import { getItem } from '@/utils/api'
 import { createStore } from 'vuex'
 
 interface StateProps {
@@ -16,26 +17,31 @@ export default createStore<StateProps>({
     hasUser: (state) => !!state.user
   },
   mutations: {
-    setUser(state, user: StateProps['user']) {
+    SET_USER(state, user: StateProps['user']) {
       state.user = user
     },
   },
   actions: {
+    // fetch user
     async fetchUser({ commit }) {
       const userId = localStorage.getItem(constants.appName + '_user_id');
       if (!userId) { // no user
-        commit('setUser', null);
+        commit('SET_USER', null);
         return;
       }
       // fetch user
-      const res = await fetch(`${config.API_URL}/data?tableName=${constants.databases.users}&id=${userId}&key=${config.API_KEY}`);
-      if (!res.ok) {
-        commit('setUser', null);
+      const res = await getItem(constants.databases.users, userId);
+      if (res.error) {
+        commit('SET_USER', null);
         return;
       }
-      const user = await res.json();
-      commit('setUser', user);
+      commit('SET_USER', res);
       localStorage.setItem(constants.appName + '_user_id', userId);
+    },
+
+    // set user
+    setUser({ commit }, user: StateProps['user']) {
+      commit('SET_USER', user);
     },
   },
   modules: {

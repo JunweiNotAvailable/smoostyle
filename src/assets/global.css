@@ -1,6 +1,7 @@
 :root {
   --app-color: #4ca;
   --app-color-hover: #3b9;
+  --app-color-disabled: #cee;
   --navbar-height: 64px;
 }
 * {
@@ -14,8 +15,17 @@ body {
 main {
   flex: 1;
 }
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+}
 
 
+.flex-1 {
+  flex: 1;
+}
 .flex-center {
   display: flex;
   justify-content: center;
@@ -48,6 +58,10 @@ main {
 .primary-button:hover {
   background: var(--app-color-hover);
 }
+.primary-button:disabled {
+  background: var(--app-color-disabled);
+  cursor: default;
+}
 .border-button {
   background: none;
   border: 1px solid #000;
@@ -58,6 +72,13 @@ main {
 .border-button:hover {
   background: #000;
   color: #fff;
+}
+.link-button {
+  background: none;
+  color: var(--app-color);
+}
+.link-button:hover {
+  text-decoration: underline;
 }
 .shadow-background {
   position: fixed;
@@ -101,4 +122,26 @@ main {
 .dialog-close .ov-icon {
   width: 24px;
   height: 24px;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 0;
+}
+.form-field label {
+  font-size: 12px;
+  letter-spacing: .5px;
+  color: #aaa;
+  margin: 2px 4px;
+}
+.form-field input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid transparent;
+  border-radius: .4rem;
+  outline: none;
+  background: #f0f0f0;
+}
+.form-field input:focus {
+  border: 1px solid #000;
 }
