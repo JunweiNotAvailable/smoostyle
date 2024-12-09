@@ -4,10 +4,8 @@
       <div class="logo-icon"><img src="@/assets/logo.svg" alt="logo"></div>
       <div class="logo-text">{{ constants.appName }}</div>
     </div>
-    <nav>
-
-    </nav>
-    <button class="border-button">Log in</button>
+    <nav></nav>
+    <button @click="toggleLoginForm" class="login-button border-button">Log in</button>
   </header>
 </template>
 
@@ -16,6 +14,7 @@ import { constants } from '@/utils/helpers';
 
 export default {
   name: 'Navbar',
+  props: ['toggleLoginForm'],
   setup() {
     return { constants };
   }

@@ -5,7 +5,7 @@
 }
 * {
   box-sizing: border-box;
-  transition: all .2s ease-in-out;
+  transition: all .1s ease-in-out;
 }
 body {
   margin: 0;
@@ -28,6 +28,12 @@ main {
 }
 .pointer {
   cursor: pointer;
+}
+.transparent {
+  opacity: 0;
+}
+.hidden {
+  display: none;
 }
 
 
@@ -52,4 +58,47 @@ main {
 .border-button:hover {
   background: #000;
   color: #fff;
+}
+.shadow-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100svh;
+  background: #0008;
+  z-index: 10;
+  padding: 16px;
+}
+/* Dialog */
+.dialog {
+  background: #fff;
+  border-radius: .5rem;
+  padding: 32px;
+  width: 100%;
+}
+.dialog.small {
+  max-width: 480px;
+}
+.dialog.medium {
+  max-width: 640px;
+}
+.dialog.large {
+  max-width: 800px;
+}
+.dialog-title {
+  font-weight: 600;
+  font-size: 20px;
+}
+.dialog-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.dialog-close:hover {
+  background: #f8f8f8;
+}
+.dialog-close .ov-icon {
+  width: 24px;
+  height: 24px;
 }

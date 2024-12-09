@@ -11,10 +11,7 @@ import './assets/global.css';
 
 export default {
   name: 'App',
-  components: {
-    Navbar,
-    Footer,
-  },
+  components: { Navbar, Footer },
   setup() {
     const store = useStore();
     
