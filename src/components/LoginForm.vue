@@ -115,10 +115,10 @@ export default {
       isCodeSent.value = true;
       const res = await signUp(email.value.replace('@', '%40'), password.value, email.value);
       if (res.error) {
-        if (res.error.includes('UsernameExistsException')) {
+        if (res.error.message?.includes('UsernameExistsException')) {
           error.value = 'Email already registered';
-        } else if (res.error.includes('InvalidPasswordException')) {
-          error.value = 'Password must be at least 6 characters';
+        } else if (res.error.message?.includes('InvalidPasswordException')) {
+          error.value = 'Password must contain at least 6 characters';
         } else {
           error.value = 'Something went wrong while signing up';
         }
@@ -180,6 +180,7 @@ export default {
   color: #f66;
   font-size: 14px;
   margin: 8px 0;
+  font-weight: 300;
 }
 .password-requirements {
   font-size: 12px;
