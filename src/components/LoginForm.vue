@@ -70,6 +70,7 @@ import { constants, getRandomString } from '@/utils/helpers';
 import { confirmSignUp, getItem, signIn, signUp, uploadItem } from '@/utils/api';
 import store from '@/store';
 import { UserModel } from '@/types/User';
+import router from '@/router';
 
 addIcons(IoCloseOutline);
 
@@ -108,6 +109,7 @@ export default {
       await setupUser();
       props.closeLoginForm();
       setTimeout(() => isLoading.value = false, 10);
+      router.push({ name: 'Home' });
     }
 
     const sendConfirmationCode = async() => {
@@ -139,6 +141,7 @@ export default {
       await createUser();
       props.closeLoginForm();
       setTimeout(() => isLoading.value = false, 10);
+      router.push({ name: 'Home' });
     }
 
     // get user from database

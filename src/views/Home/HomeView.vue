@@ -1,7 +1,6 @@
 <template>
   <LoadingView v-if="isLoading"/>
-  <!-- <BrowserView v-else-if="hasUser"/> -->
-  <DesignView v-else-if="hasUser"/>
+  <BrowserView v-else-if="hasUser"/>
   <LandingView v-else/>
 </template>
 

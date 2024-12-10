@@ -2,21 +2,25 @@
   <header class="navbar flex-between">
     <div class="logo pointer flex-center" @click="$router.push({ name: 'Home' })">
       <div class="logo-icon"><img src="@/assets/logo.svg" alt="logo"></div>
-      <div class="logo-text">{{ constants.appName }}</div>
     </div>
     <nav></nav>
-    <button @click="toggleLoginForm" class="login-button border-button">Log in</button>
+    <button v-if="!hasUser" @click="toggleLoginForm" class="login-button border-button">Log in</button>
   </header>
 </template>
 
 <script>
 import { constants } from '@/utils/helpers';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'Navbar',
   props: ['toggleLoginForm'],
   setup() {
-    return { constants };
+    const store = useStore();
+    const hasUser = computed(() => store.getters.hasUser);
+
+    return { constants, hasUser };
   }
 }
 </script>
@@ -36,7 +40,7 @@ export default {
 .navbar .logo {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -52,8 +56,8 @@ export default {
 .navbar .logo .logo-text {
   color: #000;
 }
-.navbar .border-button {
-  font-size: 16px;
+.navbar .login-button {
+  font-size: 14px;
 }
 @media screen and (max-width: 768px) {
   .navbar .logo .logo-text {
