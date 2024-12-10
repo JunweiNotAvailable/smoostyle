@@ -3,7 +3,6 @@ export const config = {
   API_URL: process.env.VUE_APP_API_URL,
   API_KEY: process.env.VUE_APP_ACCESS_KEY,
   WEB_SOCKET_URL: process.env.VUE_APP_WEB_SOCKET_URL,
-  WEB_SOCKET_CONNECTION_URL: process.env.VUE_APP_WEB_SOCKET_CONNECTIONS_URL,
 }
 
 // AUTH

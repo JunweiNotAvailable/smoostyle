@@ -111,15 +111,14 @@ export default {
     const initWebsocket = () => {
       webSocket.value = new WebSocket(config.WEB_SOCKET_URL);
       webSocket.value.onopen = () => {
-        // set user id
         setUserId(store.state.user.secretId);
         console.log('Browser connected');
       }
-      webSocket.value.onmessage = (event) => {
-        console.log(event.data);
-      }
       webSocket.value.onclose = () => {
         console.log('Browser disconnected');
+      }
+      webSocket.value.onmessage = (event) => {
+        console.log(event.data);
       }
     }
 

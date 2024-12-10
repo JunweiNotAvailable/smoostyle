@@ -1,5 +1,5 @@
 <template>
-  <router-view/>
+  <router-view v-if="!isLoading"/>
 </template>
 
 <script>
