@@ -1,87 +1,3 @@
-<template>
-  <div class="design-view">
-    <div class="flex-1">
-      <!-- header -->
-      <div class="header flex-between">
-        <div class="flex-start flex-1">
-          <input placeholder="Your app URL, e.g. http://localhost:3000" type="text">
-          <button class="primary-button flex-center">Update</button>
-        </div>
-        <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
-      </div>
-      <div class="design-body flex-1 flex-center">
-        <Canvas v-if="isConnected" :isConnected="isConnected" />
-        <NoConnectionDialog v-else="!isConnected" />
-      </div>
-    </div>
-    <aside :class="{ 'hidden': !showSidebar }">
-      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" />
-    </aside>
-  </div>
-</template>
-
-<script>
-import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
-import Sidebar from '@/components/Design/Sidebar.vue';
-import Canvas from '@/components/Design/Canvas.vue';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { BiLayoutSidebarReverse } from 'oh-vue-icons/icons';
-import { addIcons } from 'oh-vue-icons';
-import { useStore } from 'vuex';
-import router from '@/router';
-import { config } from '@/utils/api';
-
-addIcons(BiLayoutSidebarReverse);
-
-export default {
-  name: 'DesignView',
-  components: { Canvas, NoConnectionDialog, Sidebar },
-  setup() {
-    const store = useStore();
-    const isConnected = ref(false);
-    const webSocket = ref(null);
-    const showSidebar = ref(true);
-
-    // initialize web socket
-    const initWebsocket = () => {
-      webSocket.value = new WebSocket(config.WEB_SOCKET_URL);
-      webSocket.value.onopen = () => {
-        console.log('connected');
-      }
-      webSocket.value.onclose = () => {
-        console.log('disconnected');
-      }
-    }
-
-    // check user
-    watch(() => store.state.user, (user) => {
-      if (user === null) router.push({ name: 'Home' });
-    })
-
-    // handle beforeunload
-    const handleBeforeUnload = () => {
-      if (webSocket.value) webSocket.value.close();
-    }
-
-    // handle onmounted and onunmounted
-    onMounted(() => {
-      if (store.state.user === null) {
-        router.push({ name: 'Home' });
-        return;
-      }
-      initWebsocket();
-      window.addEventListener('beforeunload', handleBeforeUnload);
-    });
-    onUnmounted(() => {
-      if (webSocket.value) webSocket.value.close();
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    })
-
-    return { webSocket, isConnected, showSidebar };
-  }
-}
-</script>
-
 <style scoped>
 .design-view {
   width: 100%;
@@ -146,3 +62,105 @@ export default {
   background: #00000008;
 }
 </style>
+
+<template>
+  <div class="design-view">
+    <div class="flex-1">
+      <!-- header -->
+      <div class="header flex-between">
+        <div class="flex-start flex-1">
+          <input placeholder="Your app URL, e.g. http://localhost:3000" type="text">
+          <button class="primary-button flex-center">Update</button>
+        </div>
+        <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
+      </div>
+      <div class="design-body flex-1 flex-center">
+        <Canvas v-if="isConnected" :isConnected="isConnected" />
+        <NoConnectionDialog v-else="!isConnected" />
+      </div>
+    </div>
+    <aside :class="{ 'hidden': !showSidebar }">
+      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" />
+    </aside>
+  </div>
+</template>
+
+<script>
+import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
+import Sidebar from '@/components/Design/Sidebar.vue';
+import Canvas from '@/components/Design/Canvas.vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { BiLayoutSidebarReverse } from 'oh-vue-icons/icons';
+import { addIcons } from 'oh-vue-icons';
+import { useStore } from 'vuex';
+import router from '@/router';
+import { config } from '@/utils/api';
+
+addIcons(BiLayoutSidebarReverse);
+
+export default {
+  name: 'DesignView',
+  components: { Canvas, NoConnectionDialog, Sidebar },
+  setup() {
+    const store = useStore();
+    const isConnected = ref(false);
+    const webSocket = ref(null);
+    const showSidebar = ref(true);
+
+    // initialize web socket
+    const initWebsocket = () => {
+      webSocket.value = new WebSocket(config.WEB_SOCKET_URL);
+      webSocket.value.onopen = () => {
+        // set user id
+        setUserId(store.state.user.secretId);
+        console.log('Browser connected');
+      }
+      webSocket.value.onmessage = (event) => {
+        console.log(event.data);
+      }
+      webSocket.value.onclose = () => {
+        console.log('Browser disconnected');
+      }
+    }
+
+    /// web socket actions
+    const setUserId = (userId) => {
+      if (webSocket.value?.readyState !== WebSocket.OPEN) return;
+      webSocket.value.send(JSON.stringify({
+        action: 'setClient',
+        data: {
+          userId: userId,
+          clientType: 'browser',
+        }
+      }))
+    }
+
+
+    // check user
+    watch(() => store.state.user, (user) => {
+      if (user === null) router.push({ name: 'Home' });
+    })
+
+    // handle beforeunload
+    const handleBeforeUnload = () => {
+      if (webSocket.value) webSocket.value.close();
+    }
+
+    // handle onmounted and onunmounted
+    onMounted(() => {
+      if (store.state.user === null) { // check user
+        router.push({ name: 'Home' });
+        return;
+      }
+      initWebsocket();
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    });
+    onUnmounted(() => {
+      if (webSocket.value) webSocket.value.close();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    })
+
+    return { webSocket, isConnected, showSidebar };
+  }
+}
+</script>
