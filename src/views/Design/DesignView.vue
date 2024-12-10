@@ -10,12 +10,12 @@
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <Canvas v-if="connection" :connection="connection" />
-        <NoConnectionDialog v-else="!connection" />
+        <Canvas v-if="isConnected" :isConnected="isConnected" />
+        <NoConnectionDialog v-else="!isConnected" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
-      <Sidebar :connection="connection" :toggleSidebar="() => showSidebar = !showSidebar" />
+      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" />
     </aside>
   </div>
 </template>
@@ -24,11 +24,12 @@
 import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
 import Sidebar from '@/components/Design/Sidebar.vue';
 import Canvas from '@/components/Design/Canvas.vue';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { BiLayoutSidebarReverse } from 'oh-vue-icons/icons';
 import { addIcons } from 'oh-vue-icons';
 import { useStore } from 'vuex';
 import router from '@/router';
+import { config } from '@/utils/api';
 
 addIcons(BiLayoutSidebarReverse);
 
@@ -37,18 +38,46 @@ export default {
   components: { Canvas, NoConnectionDialog, Sidebar },
   setup() {
     const store = useStore();
-    const connection = ref(null);
+    const isConnected = ref(false);
+    const webSocket = ref(null);
     const showSidebar = ref(true);
+
+    // initialize web socket
+    const initWebsocket = () => {
+      webSocket.value = new WebSocket(config.WEB_SOCKET_URL);
+      webSocket.value.onopen = () => {
+        console.log('connected');
+      }
+      webSocket.value.onclose = () => {
+        console.log('disconnected');
+      }
+    }
 
     // check user
     watch(() => store.state.user, (user) => {
       if (user === null) router.push({ name: 'Home' });
     })
+
+    // handle beforeunload
+    const handleBeforeUnload = () => {
+      if (webSocket.value) webSocket.value.close();
+    }
+
+    // handle onmounted and onunmounted
     onMounted(() => {
-      if (store.state.user === null) router.push({ name: 'Home' });
+      if (store.state.user === null) {
+        router.push({ name: 'Home' });
+        return;
+      }
+      initWebsocket();
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    });
+    onUnmounted(() => {
+      if (webSocket.value) webSocket.value.close();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     })
 
-    return { connection, showSidebar };
+    return { webSocket, isConnected, showSidebar };
   }
 }
 </script>

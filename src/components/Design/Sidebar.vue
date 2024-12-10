@@ -4,7 +4,7 @@
   </div>
 
   <!-- block -->
-  <div class="sidebar-block"></div>
+  <div v-if="!isConnected" class="sidebar-block"></div>
 </template>
 
 <script lang="ts">
@@ -15,7 +15,7 @@ addIcons(BiLayoutSidebarReverse);
 
 export default {
   name: 'Sidebar',
-  props: ['connection', 'toggleSidebar'],
+  props: ['isConnected', 'toggleSidebar'],
   setup(props: any) {
     return { ...props };
   }

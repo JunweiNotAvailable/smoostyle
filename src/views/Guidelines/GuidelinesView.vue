@@ -88,11 +88,11 @@ export default {
 }
 .guidelines-content h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 24px;
 }
 .guidelines-content h2 {
   margin: 16px 0;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 18px;
 }
 </style>
