@@ -111,19 +111,25 @@ export default {
     const initWebsocket = () => {
       webSocket.value = new WebSocket(config.WEB_SOCKET_URL);
       webSocket.value.onopen = () => {
-        setUserId(store.state.user.secretId);
+        wsSetClient(store.state.user.secretId);
         console.log('Browser connected');
       }
       webSocket.value.onclose = () => {
         console.log('Browser disconnected');
       }
       webSocket.value.onmessage = (event) => {
-        console.log(event.data);
+        const data = JSON.parse(event.data);
+        console.log(data);
+        // if found connected extension client
+        if (data.messageType === 'EXTENSION_CONNECTED') {
+          wsAskForExtensionData(data.extensionClients[0], 'root');
+        }
       }
     }
 
     /// web socket actions
-    const setUserId = (userId) => {
+    // set client
+    const wsSetClient = (userId) => {
       if (webSocket.value?.readyState !== WebSocket.OPEN) return;
       webSocket.value.send(JSON.stringify({
         action: 'setClient',
@@ -131,6 +137,14 @@ export default {
           userId: userId,
           clientType: 'browser',
         }
+      }))
+    }
+    // ask for extension data
+    const wsAskForExtensionData = (targetId, dataType) => {
+      if (webSocket.value?.readyState !== WebSocket.OPEN) return;
+      webSocket.value.send(JSON.stringify({
+        action: 'requestExtension',
+        data: { targetId, dataType }
       }))
     }
 

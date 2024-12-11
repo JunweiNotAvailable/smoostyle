@@ -156,7 +156,7 @@ export default {
       const newUser: UserModel = {
         id: email.value,
         username: '',
-        secretId: getRandomString(16),
+        secretId: getRandomString(32),
       }
       await uploadItem(constants.databases.users, newUser);
       store.dispatch('setUser', newUser);
