@@ -76,7 +76,8 @@
       </div>
       <div class="design-body flex-1 flex-center">
         <Canvas v-if="isConnected" :isConnected="isConnected" />
-        <NoConnectionDialog v-else="!isConnected" />
+        <Loading v-else-if="isLoading" color="#4ca" size="32" />
+        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
@@ -86,24 +87,26 @@
 </template>
 
 <script>
-import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
-import Sidebar from '@/components/Design/Sidebar.vue';
-import Canvas from '@/components/Design/Canvas.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { BiLayoutSidebarReverse } from 'oh-vue-icons/icons';
 import { addIcons } from 'oh-vue-icons';
 import { useStore } from 'vuex';
 import router from '@/router';
 import { config } from '@/utils/api';
+import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
+import Sidebar from '@/components/Design/Sidebar.vue';
+import Canvas from '@/components/Design/Canvas.vue';
+import Loading from '@/components/Loading.vue';
 
 addIcons(BiLayoutSidebarReverse);
 
 export default {
   name: 'DesignView',
-  components: { Canvas, NoConnectionDialog, Sidebar },
+  components: { Canvas, NoConnectionDialog, Sidebar, Loading },
   setup() {
     const store = useStore();
-    const isConnected = ref(false);
+    const isConnected = ref(false); // is connected to the extension
+    const isLoading = ref(true);
     const webSocket = ref(null);
     const showSidebar = ref(true);
 
@@ -111,7 +114,7 @@ export default {
     const initWebsocket = () => {
       webSocket.value = new WebSocket(config.WEB_SOCKET_URL);
       webSocket.value.onopen = () => {
-        wsSetClient(store.state.user.secretId);
+        wsSetClient();
         console.log('Browser connected');
       }
       webSocket.value.onclose = () => {
@@ -120,21 +123,29 @@ export default {
       webSocket.value.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log(data);
+        // no extension returned
+        if (data.messageType === 'NO_EXTENSION') {
+          isLoading.value = false;
         // if found connected extension client
-        if (data.messageType === 'EXTENSION_CONNECTED') {
+        } else if (data.messageType === 'EXTENSION_CONNECTED') {
           wsAskForExtensionData(data.extensionClients[0], 'root');
+          isLoading.value = false;
+          isConnected.value = true;
+        // if extension client disconnect
+        } else if (data.messageType === 'EXTENSION_DISCONNECTED') {
+          isConnected.value = false;
         }
       }
     }
 
     /// web socket actions
     // set client
-    const wsSetClient = (userId) => {
+    const wsSetClient = () => {
       if (webSocket.value?.readyState !== WebSocket.OPEN) return;
       webSocket.value.send(JSON.stringify({
         action: 'setClient',
         data: {
-          userId: userId,
+          userId: store.state.user.secretId,
           clientType: 'browser',
         }
       }))
@@ -145,6 +156,15 @@ export default {
       webSocket.value.send(JSON.stringify({
         action: 'requestExtension',
         data: { targetId, dataType }
+      }))
+    }
+    // search for extension clients
+    const wsSearchExtensions = () => {
+      if (webSocket.value?.readyState !== WebSocket.OPEN) return;
+      isLoading.value = true;
+      webSocket.value.send(JSON.stringify({
+        action: 'searchExtensions',
+        data: { userId: store.state.user.secretId }
       }))
     }
 
@@ -173,7 +193,7 @@ export default {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     })
 
-    return { webSocket, isConnected, showSidebar };
+    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions };
   }
 }
 </script>
