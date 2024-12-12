@@ -69,15 +69,16 @@
       <!-- header -->
       <div class="header flex-between">
         <div class="flex-start flex-1">
-          <input placeholder="Your app URL, e.g. http://localhost:3000" type="text">
-          <button class="primary-button flex-center">Update</button>
+          <input id="app-url-input" @keydown="handleEnter" :value="appUrl" placeholder="Your app URL, e.g. http://localhost:8080" type="text">
+          <button id="app-url-update-button" @click="updateAppUrl" class="primary-button flex-center">Update</button>
         </div>
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <Canvas v-if="isConnected" :isConnected="isConnected" />
+        <!-- <Canvas v-if="isConnected" :isConnected="isConnected" :src="appUrl" />
         <Loading v-else-if="isLoading" color="#4ca" size="32" />
-        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" />
+        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" /> -->
+        <Canvas :src="appUrl" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
@@ -109,6 +110,18 @@ export default {
     const isLoading = ref(true);
     const webSocket = ref(null);
     const showSidebar = ref(true);
+    const appUrl = ref('http://localhost:8080');
+
+    // update app url
+    const updateAppUrl = () => {
+      appUrl.value = document.getElementById('app-url-input').value;
+    }
+    const handleEnter = (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('app-url-input').blur();
+        document.getElementById('app-url-update-button')?.click();
+      }
+    }
 
     // initialize web socket
     const initWebsocket = () => {
@@ -122,7 +135,6 @@ export default {
       }
       webSocket.value.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log(data);
         // no extension returned
         if (data.messageType === 'NO_EXTENSION') {
           isLoading.value = false;
@@ -193,7 +205,7 @@ export default {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     })
 
-    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions };
+    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, updateAppUrl, handleEnter };
   }
 }
 </script>
