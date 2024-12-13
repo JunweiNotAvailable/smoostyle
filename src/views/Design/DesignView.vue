@@ -20,14 +20,14 @@
 .design-view > div .header input {
   font-size: 12px;
   padding: 4px;
-  border-radius: .25rem;
+  border-radius: .4rem;
   flex: 1;
-  max-width: 400px;
+  max-width: 280px;
 }
 .design-view > div .header .primary-button {
   padding: 6px 12px;
   margin-left: 8px;
-  border-radius: .25rem;
+  border-radius: .4rem;
 }
 /* body */
 .design-body {
@@ -59,7 +59,7 @@
   padding: 4px;
 }
 .sidebar-toggle-button:hover {
-  background: #00000008;
+  background: var(--style-input-color);
 }
 </style>
 

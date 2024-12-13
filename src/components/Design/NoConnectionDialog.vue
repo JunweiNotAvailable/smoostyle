@@ -38,6 +38,6 @@ p {
 }
 .reload-button {
   padding: 6px 12px;
-  border-radius: .25rem;
+  border-radius: .4rem;
 }
 </style>

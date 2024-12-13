@@ -4,6 +4,7 @@
   --app-color-disabled: #cee;
   --navbar-height: 50px;
   --sidebar-width: 240px;
+  --style-input-color: #edf2f7;
 }
 * {
   box-sizing: border-box;
