@@ -25,8 +25,8 @@ import { onMounted, onUnmounted, ref } from 'vue';
 
 export default {
   name: 'Canvas',
-  props: ['src'],
-  setup() {
+  props: ['src', 'updateStyle'],
+  setup(props: any) {
     const selectedElement = ref(null);
     const hoverOutlineStyle = ref({ top: -1, left: -1, width: 0, height: 0 });
     const selectedOutlineStyle = ref({ top: -1, left: -1, width: 0, height: 0 });
@@ -48,7 +48,7 @@ export default {
         }
       } // selecting
       else if (data.event === 'mousedown') {
-        console.log(data.vueFile);
+        props.updateStyle(data.elementStyle);
         selectedElement.value = data.element;
         selectedOutlineStyle.value = { ...hoverOutlineStyle.value };
         selectedOutlineStyle.value.top += scrollTop.value;

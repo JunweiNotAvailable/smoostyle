@@ -75,14 +75,14 @@
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <!-- <Canvas v-if="isConnected" :isConnected="isConnected" :src="appUrl" />
+        <!-- <Canvas v-if="isConnected" :src="appUrl" :updateStyle="updateStyle" />
         <Loading v-else-if="isLoading" color="#4ca" size="32" />
         <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" /> -->
-        <Canvas :src="appUrl" />
+        <Canvas :src="appUrl" :updateStyle="updateStyle" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
-      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" />
+      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" :styles="styles" />
     </aside>
   </div>
 </template>
@@ -98,6 +98,7 @@ import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
 import Sidebar from '@/components/Design/Sidebar.vue';
 import Canvas from '@/components/Design/Canvas.vue';
 import Loading from '@/components/Loading.vue';
+import { toHex } from '@/utils/helpers';
 
 addIcons(BiLayoutSidebarReverse);
 
@@ -111,6 +112,37 @@ export default {
     const webSocket = ref(null);
     const showSidebar = ref(true);
     const appUrl = ref('http://localhost:8080');
+    const styles = ref({
+      backgroundColor: '#000000',
+      color: '#000000',
+      borderColor: '#000000',
+      width: 0,
+      height: 0,
+      widthUnit: 'auto',
+      heightUnit: 'auto',
+      borderWidth: 0,
+      borderStyle: 'solid',
+      borderRadius: 0,
+      textDecoration: 'normal',
+      fontWeight: 'normal',
+      fontSize: 16,
+    });
+
+    // update style from selected element
+    const updateStyle = (elementStyle) => {
+      styles.value = { ...elementStyle, 
+        backgroundColor: toHex(elementStyle.backgroundColor),
+        color: toHex(elementStyle.color),
+        borderColor: toHex(elementStyle.borderColor),
+        fontSize: Number(elementStyle.fontSize.replace('px', '')) || 16,
+        width: Number(elementStyle.width.replace('px', '').replace('%', '')) || 0, 
+        height: Number(elementStyle.height.replace('px', '').replace('%', '')) || 0,
+        widthUnit: elementStyle.width.includes('%') ? '%' : elementStyle.width.includes('vw') ? 'vw' : elementStyle.width.includes('px') ? 'px' : 'auto',
+        heightUnit: elementStyle.height.includes('%') ? '%' : elementStyle.height.includes('vh') ? 'vh' : elementStyle.height.includes('px') ? 'px' : 'auto',
+        borderRadius: Number(elementStyle.borderRadius.replace('px', '')) || 0,
+        borderWidth: Number(elementStyle.borderWidth.replace('px', '')) || 0,
+      };
+    }
 
     // update app url
     const updateAppUrl = () => {
@@ -205,7 +237,7 @@ export default {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     })
 
-    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, updateAppUrl, handleEnter };
+    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, styles, updateStyle, updateAppUrl, handleEnter };
   }
 }
 </script>

@@ -1,9 +1,12 @@
 <template>
-  <ColorPicker 
-    :value="color"
-    v-model="color" 
-    hidePalette
-  />
+  <div class="flex-between">
+    <div class="flex-center color-input-display" @click="handleClick" :style="{ backgroundColor: color }"></div>
+    <ColorPicker 
+      :value="color"
+      v-model="color"
+      hidePalette
+    />
+  </div>
 </template>
 
 <script lang="ts">
@@ -17,48 +20,26 @@ export default {
   components: { ColorPicker },
   setup(props: any) {
     const color = ref(props.color);
-    const showColorPicker = ref(false);
 
-    watch(() => color.value, (value) => {
-      props.color = value;
+    watch(() => props.color, (newColor) => {
+      color.value = newColor;
     });
-
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest('.color-input-display') && !target.closest('.color-input-popup')) showColorPicker.value = false;
+      const input = (target.nextSibling as HTMLElement);
+      input.click();
     }
-    onMounted(() => {
-      document.addEventListener('click', handleClick);
-    });
-    onUnmounted(() => {
-      document.removeEventListener('click', handleClick);
-    });
 
-    return { color, showColorPicker };
+    return { color, handleClick };
   }
 }
 </script>
 
 <style scoped>
-.color-input-container {
-  display: flex;
-  align-items: center;
-}
 .color-input-display {
   width: 16px;
   height: 16px;
   border-radius: .25rem;
-  position: relative;
-}
-.color-input-popup {
-  position: absolute;
-  top: 0;
-  right: 110%;
-  background: #fff;
-  border: 1px solid #f0f0f0;
-  box-shadow: 2px 4px 8px 2px #0000000f;
-  width: 200px;
-  border-radius: .5rem;
-  padding: 8px;
+  margin-right: 8px;
 }
 </style>
