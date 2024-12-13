@@ -48,7 +48,7 @@ export default {
         }
       } // selecting
       else if (data.event === 'mousedown') {
-        console.log(data.element);
+        console.log(data.vueFile);
         selectedElement.value = data.element;
         selectedOutlineStyle.value = { ...hoverOutlineStyle.value };
         selectedOutlineStyle.value.top += scrollTop.value;
