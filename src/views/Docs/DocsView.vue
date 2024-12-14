@@ -1,5 +1,6 @@
 <template>
-  <div class="docs-view">
+  <LoadingView v-if="isLoading"/>
+  <div v-else class="docs-view">
     <Navbar :toggleLoginForm="toggleLoginForm"/>
     <div class="content">
       <aside>
@@ -24,11 +25,15 @@ import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
 import SetUpAConnection from '@/components/Docs/SetUpAConnection.vue';
 import LoginForm from '@/components/LoginForm.vue';
+import { useStore } from 'vuex';
+import LoadingView from '../LoadingView.vue';
 
 export default {
   name: 'DocsView',
-  components: { Navbar, Footer, SetUpAConnection, LoginForm },
+  components: { LoadingView, Navbar, Footer, SetUpAConnection, LoginForm },
   setup() {
+    const store = useStore();
+    const isLoading = computed(() => store.getters.isUserLoading);
     const route = useRoute();
     const g = computed(() => route.query.g);
     const showLoginForm = ref(false);
@@ -44,7 +49,7 @@ export default {
     onMounted(() => document.addEventListener('click', handleClick));
     onUnmounted(() => document.removeEventListener('click', handleClick));
 
-    return { g, showLoginForm, toggleLoginForm, closeLoginForm };
+    return { isLoading, g, showLoginForm, toggleLoginForm, closeLoginForm };
   }
 }
 </script>
@@ -111,5 +116,13 @@ export default {
   margin-top: 32px;
   font-weight: 500;
   font-size: 18px;
+}
+.docs-content p {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.5;
+}
+.docs-content code {
+  background: #f0f0f0;
 }
 </style>

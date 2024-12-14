@@ -7,7 +7,6 @@
         <div v-else><v-icon scale="0.8" name="hi-menu-alt-4" /></div>
       </button>
       <div class="menu-popup" v-if="showMenu">
-        <button @click="() => {$router.push({ name: 'Settings' }); showMenu = false;}">Settings</button>
         <button @click="logout">Log out</button>
       </div>
     </div>
@@ -211,6 +210,14 @@ export default {
 .sidebar-body {
   flex: 1;
   overflow: auto;
+}
+.sidebar-body::-webkit-scrollbar {
+  width: 4px;
+  background: none;
+}
+.sidebar-body::-webkit-scrollbar-thumb {
+  background: #0002;
+  border-radius: 1rem;
 }
 .style-title {
   font-weight: 600;

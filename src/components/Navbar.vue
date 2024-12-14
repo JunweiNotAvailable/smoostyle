@@ -11,7 +11,6 @@
         <div v-else><v-icon scale="0.8" name="hi-menu-alt-4" /></div>
       </button>
       <div class="menu-popup" v-if="showMenu">
-        <button @click="() => {$router.push({ name: 'Settings' }); showMenu = false;}">Settings</button>
         <button @click="logout">Log out</button>
       </div>
     </div>
