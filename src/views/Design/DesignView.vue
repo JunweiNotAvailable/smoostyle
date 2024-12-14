@@ -29,6 +29,10 @@
   margin-left: 8px;
   border-radius: .4rem;
 }
+.update-status {
+  margin-left: 16px;
+  opacity: 0.5;
+}
 /* body */
 .design-body {
   background: #f3f3f3;
@@ -71,14 +75,17 @@
         <div class="flex-start flex-1">
           <input id="app-url-input" @keydown="handleEnter" :value="appUrl" placeholder="Your app URL, e.g. http://localhost:8080" type="text">
           <button id="app-url-update-button" @click="updateAppUrl" class="primary-button flex-center">Update</button>
+          <div class="update-status">
+            <Loading v-if="isUpdating" color="#4ca" size="16" />
+            <v-icon v-else-if="timeoutId !== null" name="bi-cloud-check-fill" color="#4ca" />
+          </div>
         </div>
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <!-- <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
+        <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
         <Loading v-else-if="isLoading" color="#4ca" size="32" />
-        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" /> -->
-        <Canvas :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
+        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
@@ -89,7 +96,7 @@
 
 <script>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { BiLayoutSidebarReverse } from 'oh-vue-icons/icons';
+import { BiLayoutSidebarReverse, BiCloudCheckFill } from 'oh-vue-icons/icons';
 import { addIcons } from 'oh-vue-icons';
 import { useStore } from 'vuex';
 import router from '@/router';
@@ -98,9 +105,9 @@ import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
 import Sidebar from '@/components/Design/Sidebar.vue';
 import Canvas from '@/components/Design/Canvas.vue';
 import Loading from '@/components/Loading.vue';
-import { toHex } from '@/utils/helpers';
+import { toHex, toKebabCase } from '@/utils/helpers';
 
-addIcons(BiLayoutSidebarReverse);
+addIcons(BiLayoutSidebarReverse, BiCloudCheckFill);
 
 export default {
   name: 'DesignView',
@@ -108,10 +115,12 @@ export default {
   setup() {
     const store = useStore();
     const isConnected = ref(false); // is connected to the extension
+    const connections = ref([]);
     const isLoading = ref(true);
     const webSocket = ref(null);
     const showSidebar = ref(true);
     const appUrl = ref('http://localhost:8080');
+    const selectedElement = ref(null);
     const styles = ref({
       backgroundColor: '#000000',
       color: '#000000',
@@ -129,9 +138,17 @@ export default {
       padding: '0px',
       margin: '0px',
     });
+    const timeoutId = ref(null);
+    const isUpdating = ref(false);
 
     watch(() => styles.value, () => {
-      console.log(styles.value);
+      if (!isConnected.value || !selectedElement.value) return;
+      if (timeoutId.value) clearTimeout(timeoutId.value);
+      isUpdating.value = true;
+      timeoutId.value = setTimeout(() => {
+        // send update message to extension
+        wsUpdateStyle();
+      }, 2000);
     })
 
     const updateStyle = (newStyles) => {
@@ -140,6 +157,7 @@ export default {
 
     // update style from selected element
     const updateDesignProps = (data) => {
+      selectedElement.value = data.element;
       const elementStyle = data.elementStyle;
       styles.value = { ...data.elementStyle, 
         backgroundColor: toHex(elementStyle.backgroundColor),
@@ -181,14 +199,20 @@ export default {
         // no extension returned
         if (data.messageType === 'NO_EXTENSION') {
           isLoading.value = false;
-        // if found connected extension client
-        } else if (data.messageType === 'EXTENSION_CONNECTED') {
-          wsAskForExtensionData(data.extensionClients[0], 'root');
+        } // if found connected extension client
+        else if (data.messageType === 'EXTENSION_CONNECTED') {
           isLoading.value = false;
           isConnected.value = true;
-        // if extension client disconnect
-        } else if (data.messageType === 'EXTENSION_DISCONNECTED') {
+          connections.value = data.extensionClients;
+        } // if extension client disconnect
+        else if (data.messageType === 'EXTENSION_DISCONNECTED') {
           isConnected.value = false;
+          connections.value = [];
+        } // if extension client update style
+        else if (data.messageType === 'RESPONSE') {
+          if (data.type === 'update') {
+            isUpdating.value = false;
+          }
         }
       }
     }
@@ -205,14 +229,6 @@ export default {
         }
       }))
     }
-    // ask for extension data
-    const wsAskForExtensionData = (targetId, dataType) => {
-      if (webSocket.value?.readyState !== WebSocket.OPEN) return;
-      webSocket.value.send(JSON.stringify({
-        action: 'requestExtension',
-        data: { targetId, dataType }
-      }))
-    }
     // search for extension clients
     const wsSearchExtensions = () => {
       if (webSocket.value?.readyState !== WebSocket.OPEN) return;
@@ -220,6 +236,19 @@ export default {
       webSocket.value.send(JSON.stringify({
         action: 'searchExtensions',
         data: { userId: store.state.user.secretId }
+      }))
+    }
+    // update style
+    const wsUpdateStyle = () => {
+      if (webSocket.value?.readyState !== WebSocket.OPEN) return;
+      let { widthUnit, heightUnit, width, height, ...parsedStyle } = styles.value;
+      parsedStyle = Object.fromEntries(Object.entries(parsedStyle).map(([key, value]) => [toKebabCase(key), typeof value === 'number' ? `${value}px` : value]));
+      parsedStyle.width = widthUnit === 'auto' ? 'auto' : `${width}${widthUnit}`;
+      parsedStyle.height = heightUnit === 'auto' ? 'auto' : `${height}${heightUnit}`;
+      parsedStyle['font-weight'] = Number(parsedStyle['font-weight']);
+      webSocket.value.send(JSON.stringify({
+        action: 'requestExtension',
+        data: { targetId: connections.value[0], type: 'update', userId: store.state.user.secretId, element: selectedElement.value, style: parsedStyle }
       }))
     }
 
@@ -248,7 +277,7 @@ export default {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     })
 
-    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, styles, updateStyle, updateDesignProps, updateAppUrl, handleEnter };
+    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, styles, updateStyle, updateDesignProps, isUpdating, timeoutId, updateAppUrl, handleEnter };
   }
 }
 </script>

@@ -35,14 +35,15 @@ export default {
     const isScrolling = ref(false);
 
     watch(() => props.styles, (newStyles) => {
-      let { widthUnit, heightUnit, ...styles } = newStyles;
+      let { widthUnit, heightUnit, width, height, ...styles } = newStyles;
       const iframe = document.getElementById('design-iframe') as HTMLIFrameElement;
       styles = Object.fromEntries(Object.entries(styles).map(([key, value]) => [toKebabCase(key), typeof value === 'number' ? `${value}px` : value]));
-      styles.width = widthUnit === 'auto' ? 'auto' : `${styles.width}${widthUnit}`;
-      styles.height = heightUnit === 'auto' ? 'auto' : `${styles.height}${heightUnit}`;
+      styles.width = widthUnit === 'auto' ? 'auto' : `${width}${widthUnit}`;
+      styles.height = heightUnit === 'auto' ? 'auto' : `${height}${heightUnit}`;
+      styles['font-weight'] = Number(styles['font-weight']);
       const message = {
         action: 'applyStyles',
-        selector: selectedElement.value,
+        element: selectedElement.value,
         styles: styles,
       }
       iframe.contentWindow?.postMessage(message, '*');

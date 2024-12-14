@@ -51,7 +51,7 @@
   </div>
 
   <!-- block -->
-  <!-- <div v-if="!isConnected" class="sidebar-block"></div> -->
+  <div v-if="!isConnected" class="sidebar-block"></div>
 </template>
 
 <script lang="ts">
@@ -66,7 +66,7 @@ addIcons(BiLayoutSidebarReverse);
 export default {
   name: 'Sidebar',
   components: { ColorInput, Dropdown },
-  props: ['styles', 'toggleSidebar'],
+  props: ['styles', 'toggleSidebar', 'isConnected'],
   emits: ['update:styles'],
   setup(props: any, { emit }: any) {
     const paddings = ref({
