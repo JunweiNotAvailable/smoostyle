@@ -19,3 +19,5 @@ export const toHex = (color: string) => {
   const alphaHex = a !== undefined ? Math.round(a * 255 / 100).toString(16).padStart(2, '0') : '';
   return `#${rgbHex}${alphaHex}`;
 }
+
+export const toKebabCase = (str: string) => str.replace(/([A-Z])/g, '-$1').toLowerCase();

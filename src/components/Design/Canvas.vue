@@ -20,18 +20,33 @@
 </template>
 
 <script lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { toKebabCase } from '@/utils/helpers';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 
 export default {
   name: 'Canvas',
-  props: ['src', 'updateStyle'],
+  props: ['src', 'styles', 'updateDesignProps'],
   setup(props: any) {
     const selectedElement = ref(null);
     const hoverOutlineStyle = ref({ top: -1, left: -1, width: 0, height: 0 });
     const selectedOutlineStyle = ref({ top: -1, left: -1, width: 0, height: 0 });
     const scrollTop = ref(0);
     const isScrolling = ref(false);
+
+    watch(() => props.styles, (newStyles) => {
+      let { widthUnit, heightUnit, ...styles } = newStyles;
+      const iframe = document.getElementById('design-iframe') as HTMLIFrameElement;
+      styles = Object.fromEntries(Object.entries(styles).map(([key, value]) => [toKebabCase(key), typeof value === 'number' ? `${value}px` : value]));
+      styles.width = widthUnit === 'auto' ? 'auto' : `${styles.width}${widthUnit}`;
+      styles.height = heightUnit === 'auto' ? 'auto' : `${styles.height}${heightUnit}`;
+      const message = {
+        action: 'applyStyles',
+        selector: selectedElement.value,
+        styles: styles,
+      }
+      iframe.contentWindow?.postMessage(message, '*');
+    });
 
     // event methods
     const handleIframeMessage = (e: MessageEvent) => {
@@ -48,7 +63,7 @@ export default {
         }
       } // selecting
       else if (data.event === 'mousedown') {
-        props.updateStyle(data.elementStyle);
+        props.updateDesignProps(data);
         selectedElement.value = data.element;
         selectedOutlineStyle.value = { ...hoverOutlineStyle.value };
         selectedOutlineStyle.value.top += scrollTop.value;
@@ -56,6 +71,10 @@ export default {
       else if (data.event === 'scroll') {
         scrollTop.value = data.scrollTop;
         isScrolling.value = ('html > body:nth-child(2) > ' + selectedElement.value).includes(data.element);        
+      } // update style
+      else if (data.event === 'updateStyle') {
+        selectedOutlineStyle.value = { ...data.outlineStyle };
+        selectedOutlineStyle.value.top += scrollTop.value;
       }
     }
 

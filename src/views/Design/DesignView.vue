@@ -75,14 +75,14 @@
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <!-- <Canvas v-if="isConnected" :src="appUrl" :updateStyle="updateStyle" />
+        <!-- <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
         <Loading v-else-if="isLoading" color="#4ca" size="32" />
         <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" /> -->
-        <Canvas :src="appUrl" :updateStyle="updateStyle" />
+        <Canvas :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
-      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" :styles="styles" />
+      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" v-model:styles="styles" />
     </aside>
   </div>
 </template>
@@ -126,11 +126,22 @@ export default {
       textDecoration: 'normal',
       fontWeight: 'normal',
       fontSize: 16,
+      padding: '0px',
+      margin: '0px',
     });
 
+    watch(() => styles.value, () => {
+      console.log(styles.value);
+    })
+
+    const updateStyle = (newStyles) => {
+      styles.value = { ...styles.value, ...newStyles };
+    }
+
     // update style from selected element
-    const updateStyle = (elementStyle) => {
-      styles.value = { ...elementStyle, 
+    const updateDesignProps = (data) => {
+      const elementStyle = data.elementStyle;
+      styles.value = { ...data.elementStyle, 
         backgroundColor: toHex(elementStyle.backgroundColor),
         color: toHex(elementStyle.color),
         borderColor: toHex(elementStyle.borderColor),
@@ -237,7 +248,7 @@ export default {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     })
 
-    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, styles, updateStyle, updateAppUrl, handleEnter };
+    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, styles, updateStyle, updateDesignProps, updateAppUrl, handleEnter };
   }
 }
 </script>
