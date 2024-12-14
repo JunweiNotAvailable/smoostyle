@@ -1,6 +1,16 @@
 <template>
-  <div class="sidebar-header">
+  <div class="sidebar-header flex-between">
     <button @click="toggleSidebar" class="sidebar-button sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
+    <div class="menu-button-container">
+      <button @click="showMenu = !showMenu" class="menu-button">
+        <div v-if="user.username">{{ user.username?.[0] }}</div>
+        <div v-else><v-icon scale="0.8" name="hi-menu-alt-4" /></div>
+      </button>
+      <div class="menu-popup" v-if="showMenu">
+        <button @click="() => {$router.push({ name: 'Settings' }); showMenu = false;}">Settings</button>
+        <button @click="logout">Log out</button>
+      </div>
+    </div>
   </div>
   <div class="sidebar-body">
     <!-- COLORS -->
@@ -56,12 +66,14 @@
 
 <script lang="ts">
 import { addIcons } from 'oh-vue-icons';
-import { BiLayoutSidebarReverse } from 'oh-vue-icons/icons';
+import { BiLayoutSidebarReverse, HiMenuAlt4 } from 'oh-vue-icons/icons';
 import ColorInput from './ColorInput.vue';
 import Dropdown from './Dropdown.vue';
-import { ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { useStore } from 'vuex';
+import { constants } from '@/utils/helpers';
 
-addIcons(BiLayoutSidebarReverse);
+addIcons(BiLayoutSidebarReverse, HiMenuAlt4);
 
 export default {
   name: 'Sidebar',
@@ -69,6 +81,9 @@ export default {
   props: ['styles', 'toggleSidebar', 'isConnected'],
   emits: ['update:styles'],
   setup(props: any, { emit }: any) {
+    const store = useStore();
+    const user = ref(store.state.user);
+    const showMenu = ref(false);
     const paddings = ref({
       top: 0,
       right: 0,
@@ -157,7 +172,22 @@ export default {
       emit('update:styles', updatedStyles);
     };
 
-    return { margins, paddings, handlePaddingChange, handleMarginChange, updateStyle };
+    // handle click events
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.menu-button') && !target.closest('.menu-popup')) showMenu.value = false;
+    }
+
+    const logout = () => {
+      store.dispatch('setUser', null);
+      localStorage.removeItem(constants.appName + '_user_id');
+      showMenu.value = false;
+    }
+
+    onMounted(() => document.addEventListener('click', handleClick));
+    onUnmounted(() => document.removeEventListener('click', handleClick));
+
+    return { user, showMenu, margins, paddings, handlePaddingChange, handleMarginChange, updateStyle, logout };
   }
 }
 </script>

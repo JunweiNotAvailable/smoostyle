@@ -162,3 +162,44 @@ input:focus, textarea:focus {
 .form-field input:focus {
   border: 1px solid #000;
 }
+
+/* menu */
+.menu-button-container {
+  position: relative;
+}
+.menu-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  background: #d3dad8;
+  font-weight: bold;
+  color: #fff;
+}
+.menu-popup {
+  position: absolute;
+  z-index: 10;
+  top: 105%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: .4rem;
+  box-shadow: 2px 4px 4px 1px #0001;
+  padding: 8px 0;
+  width: 160px;
+}
+.menu-popup button {
+  width: 100%;
+  padding: 8px 16px;
+  text-align: start;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+.menu-popup button:hover {
+  background: var(--style-input-color);
+}

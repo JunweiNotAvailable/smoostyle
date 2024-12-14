@@ -5,12 +5,23 @@
     </div>
     <nav></nav>
     <button v-if="!hasUser" @click="toggleLoginForm" class="login-button border-button">Log in</button>
+    <div v-else class="menu-button-container">
+      <button @click="showMenu = !showMenu" class="menu-button">
+        <div v-if="user.username">{{ user.username?.[0] }}</div>
+        <div v-else><v-icon scale="0.8" name="hi-menu-alt-4" /></div>
+      </button>
+      <div class="menu-popup" v-if="showMenu">
+        <button @click="() => {$router.push({ name: 'Settings' }); showMenu = false;}">Settings</button>
+        <button @click="logout">Log out</button>
+      </div>
+    </div>
   </header>
 </template>
 
 <script>
+import router from '@/router';
 import { constants } from '@/utils/helpers';
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
@@ -18,9 +29,27 @@ export default {
   props: ['toggleLoginForm'],
   setup() {
     const store = useStore();
+    const user = ref(store.state.user);
+    const showMenu = ref(false);
     const hasUser = computed(() => store.getters.hasUser);
 
-    return { constants, hasUser };
+    // handle click events
+    const handleClick = (e) => {
+      const target = e.target;
+      if (!target.closest('.menu-button') && !target.closest('.menu-popup')) showMenu.value = false;
+    }
+
+    const logout = () => {
+      store.dispatch('setUser', null);
+      localStorage.removeItem(constants.appName + '_user_id');
+      router.push({ name: 'Home' });
+      showMenu.value = false;
+    }
+
+    onMounted(() => document.addEventListener('click', handleClick));
+    onUnmounted(() => document.removeEventListener('click', handleClick));
+
+    return { user, showMenu, constants, hasUser, logout };
   }
 }
 </script>

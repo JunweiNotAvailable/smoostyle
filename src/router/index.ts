@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/Home/HomeView.vue'
-import GuidelinesView from '../views/Guidelines/GuidelinesView.vue'
+import DocsView from '../views/Docs/DocsView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import DesignView from '@/views/Design/DesignView.vue'
 
@@ -16,9 +16,9 @@ const routes: Array<RouteRecordRaw> = [
     component: DesignView
   },
   {
-    path: '/guidelines',
-    name: 'Guidelines',
-    component: GuidelinesView
+    path: '/docs',
+    name: 'Docs',
+    component: DocsView
   },
   {
     path: '/:catchAll(.*)',

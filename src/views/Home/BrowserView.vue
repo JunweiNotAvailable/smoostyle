@@ -5,10 +5,17 @@
 </template>
 
 <script>
+import router from '@/router';
+import { nextTick, onMounted } from 'vue';
+
 export default {
   name: 'BrowserView',
-  mounted() {
-    this.$router.push({ name: 'Design' });
+  setup() {
+    onMounted(() => {
+      nextTick(() => {
+        router.push({ name: 'Design' });
+      })
+    })
   }
 }
 </script>
