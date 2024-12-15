@@ -12,23 +12,29 @@
     <!-- title 2 -->
     <h2>{{ titles[1] }}</h2>
     <p>
-      Import the Smoostyle event handlers and register them in your entry file (e.g., App.vue for Vue or App.tsx for React).
+      Import the Smoostyle event handlers and register them in your entry file (e.g., <span class="italic">App.vue</span> for Vue or <span class="italic">App.tsx</span> for React).
       <Code :value="importCode" language="javascript"/>
     </p>
     <!-- title 3 -->
     <h2>{{ titles[2] }}</h2>
     <p>
-
+      Run your project locally to enable live design editing. Use your usual start command, e.g. For Vue:
+      <Code value="npm run serve" language="bash"/>
     </p>
     <!-- title 4 -->
     <h2>{{ titles[3] }}</h2>
     <p>
-
+      Run a Smoostyle client to connect your project with the browser:<br>
+      <span class="point">1. Start the client by running the following command:<Code value="npx smoostyle start" language="bash"/></span>
+      <span class="point">2. Log in to the client with the same account credentials you sign up on Smoostyle.<br></span>
+      <span class="point">3. The client will constantly check for updates and apply them to your project files.</span>
     </p>
     <!-- title 5 -->
     <h2>{{ titles[4] }}</h2>
     <p>
-
+      You can start designing directly in the browser:<br>
+      <span class="point">1. Type in the URL of your project in the input field. (e.g. http://localhost:8080)<br></span>
+      <span class="point">2. Press the reload button if the page doesn't load.</span>
     </p>
   </div>
 </template>

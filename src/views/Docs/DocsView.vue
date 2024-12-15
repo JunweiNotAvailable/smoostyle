@@ -122,6 +122,13 @@ export default {
   font-weight: 300;
   line-height: 1.5;
 }
+.docs-content p span.point {
+  display: block;
+  margin: 8px 0;
+}
+.docs-content p span.italic {
+  font-style: italic;
+}
 .docs-content code {
   background: #f0f0f0;
 }

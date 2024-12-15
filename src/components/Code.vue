@@ -2,8 +2,8 @@
   <div class="code-container">
     <pre><code :class="language">{{ value }}</code></pre>
     <button @click="copy">
-      <v-icon v-if="isCopied" name="bi-check-lg" fill="#4ca" scale="0.8" />
-      <v-icon v-else name="io-copy-outline" fill="#4ca" scale="0.8" />
+      <v-icon v-if="isCopied" name="bi-check-lg" fill="#4ca" />
+      <v-icon v-else name="io-copy-outline" scale="0.8" />
     </button>
   </div>
 </template>
