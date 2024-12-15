@@ -8,6 +8,13 @@
       <button @click="toggleLoginForm" class="login-button primary-button">Get started</button>
     </section>
     <!-- movie section -->
+    <section class="movie">
+      <div class="movie-container">
+        <video autoplay muted loop>
+          <source src="@/assets/demo.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
   </div>
   <Footer/>
 
@@ -49,12 +56,14 @@ export default {
   display: flex;
   flex-direction: column;
 }
+section {
+  padding: 32px;
+}
 section.hero {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 32px;
 }
 section.hero h1 {
   font-size: 64px;
@@ -74,5 +83,41 @@ section.hero .primary-button {
   margin-top: 40px;
   font-size: 18px;
   padding: 12px 24px;
+}
+section .movie-container {
+  overflow: hidden;
+  box-shadow: 0px 0px 8px 0px #0001;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  aspect-ratio: 192/101;
+}
+section .movie-container video {
+  width: 101%;
+  height: 101%;
+  object-fit: cover;
+  object-position: center;
+}
+@media screen and (max-width: 768px) {
+  section {
+    padding: 16px;
+  }
+  section.hero h1 {
+    font-size: 48px;
+  }
+  section.hero p {
+    font-size: 20px;
+  }
+  section.hero .primary-button {
+    font-size: 16px;
+  }
+  section .movie-container {
+    aspect-ratio: 160/101;
+    justify-content: end;
+  }
+  section .movie-container video {
+    object-position: right;
+  }
 }
 </style>

@@ -60,7 +60,7 @@
   </div>
 
   <!-- block -->
-  <div v-if="!isConnected" class="sidebar-block"></div>
+  <!-- <div v-if="!isConnected" class="sidebar-block"></div> -->
 </template>
 
 <script lang="ts">
