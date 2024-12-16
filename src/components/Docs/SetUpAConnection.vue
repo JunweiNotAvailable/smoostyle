@@ -35,6 +35,12 @@
       You can start designing directly in the browser:<br>
       <span class="point">1. Type in the URL of your project in the input field. (e.g. http://localhost:8080)<br></span>
       <span class="point">2. Press the reload button if the page doesn't load.</span>
+
+      <br>
+      Note:<br>
+      If you can't see the project on the screen, it might be a Mixed Content issue.<br>
+      Change the "serve" script in your <span class="italic">package.json</span> file to run the project on HTTPS.
+      <Code :value="httpsScriptCode" language="javascript"/>
     </p>
   </div>
 </template>
@@ -48,8 +54,9 @@ export default {
   setup() {
     const titles = ['Install the package', 'Import the handlers', 'Start the project', 'Run a Smoostyle client', 'Design on the browser'];
     const importCode = `// App.vue\n\n<script>\nimport { onMounted, onUnmounted } from 'vue';\nimport { SmHandleMessage, SmHandleMouseMove, SmHandleMouseDown, SmHandleScroll } from 'smoostyle';\n\nexport default {\n  name: 'App',\n  setup() {\n    onMounted(() => {\n      window.addEventListener('message', SmHandleMessage);\n      window.addEventListener('mousemove', SmHandleMouseMove);\n      window.addEventListener('mousedown', SmHandleMouseDown);\n      window.addEventListener('scroll', SmHandleScroll);\n    });\n    onUnmounted(() => {\n      window.removeEventListener('message', SmHandleMessage);\n      window.removeEventListener('mousemove', SmHandleMouseMove);\n      window.removeEventListener('mousedown', SmHandleMouseDown);\n      window.removeEventListener('scroll', SmHandleScroll);\n    });\n  }\n}\n<\/script>`;
+    const httpsScriptCode = `// package.json\n...\n"scripts": {\n  "serve": "vue-cli-service serve --https",\n  "build": "vue-cli-service build"\n},`;
 
-    return { titles, importCode };
+    return { titles, importCode, httpsScriptCode };
   }
 }
 </script>
