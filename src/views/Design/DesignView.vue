@@ -131,14 +131,13 @@ export default {
     const isUpdating = ref(false);
 
     watch(() => styles.value, () => {
-      console.log(styles.value);
       if (!isConnected.value || !selectedElement.value) return;
       if (timeoutId.value) clearTimeout(timeoutId.value);
       isUpdating.value = true;
       timeoutId.value = setTimeout(() => {
         // send update message to extension
         wsUpdateStyle();
-      }, 2000);
+      }, 600);
     })
 
     const updateStyle = (newStyles) => {
