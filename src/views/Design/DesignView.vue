@@ -119,7 +119,7 @@ export default {
     const isLoading = ref(true);
     const webSocket = ref(null);
     const showSidebar = ref(true);
-    const appUrl = ref('https://localhost:3000');
+    const appUrl = ref('http://localhost:8080');
     const selectedElement = ref(null);
     const styles = ref({ backgroundColor: '#000000', color: '#000000', borderColor: '#000000', rotate: '0deg', borderWidth: 0, borderStyle: 'solid', borderRadius: 0, textDecoration: 'normal', fontWeight: 'normal', fontSize: 16, padding: '0px', margin: '0px',
       width: 0, height: 0, widthUnit: 'auto', heightUnit: 'auto',
