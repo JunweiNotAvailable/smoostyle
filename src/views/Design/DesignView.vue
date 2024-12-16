@@ -83,14 +83,13 @@
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <Canvas :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
-        <!-- <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
+        <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
         <Loading v-else-if="isLoading" color="#4ca" size="32" />
-        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" /> -->
+        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
-      <Sidebar :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" v-model:styles="styles" />
+      <Sidebar :selectedElement="selectedElement" :isConnected="isConnected" :toggleSidebar="() => showSidebar = !showSidebar" v-model:styles="styles" />
     </aside>
   </div>
 </template>
@@ -122,22 +121,11 @@ export default {
     const showSidebar = ref(true);
     const appUrl = ref('http://localhost:3000');
     const selectedElement = ref(null);
-    const styles = ref({
-      backgroundColor: '#000000',
-      color: '#000000',
-      borderColor: '#000000',
-      width: 0,
-      height: 0,
-      widthUnit: 'auto',
-      heightUnit: 'auto',
-      borderWidth: 0,
-      borderStyle: 'solid',
-      borderRadius: 0,
-      textDecoration: 'normal',
-      fontWeight: 'normal',
-      fontSize: 16,
-      padding: '0px',
-      margin: '0px',
+    const styles = ref({ backgroundColor: '#000000', color: '#000000', borderColor: '#000000', rotate: '0deg', borderWidth: 0, borderStyle: 'solid', borderRadius: 0, textDecoration: 'normal', fontWeight: 'normal', fontSize: 16, padding: '0px', margin: '0px',
+      width: 0, height: 0, widthUnit: 'auto', heightUnit: 'auto',
+      position: 'static', top: 0, left: 0, right: 0, bottom: 0, topUnit: 'px', leftUnit: 'px', rightUnit: 'px', bottomUnit: 'px',
+      display: 'block', alignItems: 'start', justifyContent: 'start', flexDirection: 'row',
+      overflow: 'visible',
     });
     const timeoutId = ref(null);
     const isUpdating = ref(false);
@@ -148,7 +136,7 @@ export default {
       isUpdating.value = true;
       timeoutId.value = setTimeout(() => {
         // send update message to extension
-        // wsUpdateStyle();
+        wsUpdateStyle();
       }, 2000);
     })
 
@@ -161,17 +149,16 @@ export default {
       selectedElement.value = data.element;
       const elementStyle = data.elementStyle;
       styles.value = { ...data.elementStyle, 
-        backgroundColor: toHex(elementStyle.backgroundColor),
-        color: toHex(elementStyle.color),
-        borderColor: toHex(elementStyle.borderColor),
-        fontSize: Number(elementStyle.fontSize.replace('px', '')) || 16,
-        width: Number(elementStyle.width.replace('px', '').replace('%', '')) || 0, 
-        height: Number(elementStyle.height.replace('px', '').replace('%', '')) || 0,
-        widthUnit: elementStyle.width.includes('%') ? '%' : elementStyle.width.includes('vw') ? 'vw' : elementStyle.width.includes('px') ? 'px' : 'auto',
-        heightUnit: elementStyle.height.includes('%') ? '%' : elementStyle.height.includes('vh') ? 'vh' : elementStyle.height.includes('px') ? 'px' : 'auto',
-        borderRadius: Number(elementStyle.borderRadius.replace('px', '')) || 0,
-        borderWidth: Number(elementStyle.borderWidth.replace('px', '')) || 0,
+        backgroundColor: toHex(elementStyle.backgroundColor), color: toHex(elementStyle.color), borderColor: toHex(elementStyle.borderColor),
+        fontSize: Number(elementStyle.fontSize.replace('px', '')) || 16, borderRadius: Number(elementStyle.borderRadius.replace('px', '')) || 0, borderWidth: Number(elementStyle.borderWidth.replace('px', '')) || 0,
+        width: Number(elementStyle.width.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, widthUnit: elementStyle.width.includes('%') ? '%' : elementStyle.width.includes('vw') ? 'vw' : elementStyle.width.includes('vh') ? 'vh' : elementStyle.width.includes('px') ? 'px' : 'auto',
+        height: Number(elementStyle.height.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, heightUnit: elementStyle.height.includes('%') ? '%' : elementStyle.height.includes('vh') ? 'vh' : elementStyle.width.includes('vw') ? 'vw' : elementStyle.height.includes('px') ? 'px' : 'auto',
+        top: Number(elementStyle.top.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, topUnit: elementStyle.top.includes('%') ? '%' : elementStyle.top.includes('vh') ? 'vh' : elementStyle.top.includes('vw') ? 'vw' : elementStyle.top.includes('px') ? 'px' : 'auto',
+        left: Number(elementStyle.left.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, leftUnit: elementStyle.left.includes('%') ? '%' : elementStyle.left.includes('vh') ? 'vh' : elementStyle.left.includes('vw') ? 'vw' : elementStyle.left.includes('px') ? 'px' : 'auto',
+        bottom: Number(elementStyle.bottom.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, bottomUnit: elementStyle.bottom.includes('%') ? '%' : elementStyle.bottom.includes('vh') ? 'vh' : elementStyle.bottom.includes('vw') ? 'vw' : elementStyle.bottom.includes('px') ? 'px' : 'auto',
+        right: Number(elementStyle.right.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, rightUnit: elementStyle.right.includes('%') ? '%' : elementStyle.right.includes('vh') ? 'vh' : elementStyle.right.includes('vw') ? 'vw' : elementStyle.right.includes('px') ? 'px' : 'auto',
       };
+      console.log(styles.value);
     }
 
     // update app url
@@ -242,10 +229,18 @@ export default {
     // update style
     const wsUpdateStyle = () => {
       if (webSocket.value?.readyState !== WebSocket.OPEN) return;
-      let { widthUnit, heightUnit, width, height, ...parsedStyle } = styles.value;
+      let { 
+        widthUnit, heightUnit, width, height,
+        top, left, right, bottom, topUnit, leftUnit, rightUnit, bottomUnit,
+        ...parsedStyle 
+      } = styles.value;
       parsedStyle = Object.fromEntries(Object.entries(parsedStyle).map(([key, value]) => [toKebabCase(key), typeof value === 'number' ? `${value}px` : value]));
       parsedStyle.width = widthUnit === 'auto' ? 'auto' : `${width}${widthUnit}`;
       parsedStyle.height = heightUnit === 'auto' ? 'auto' : `${height}${heightUnit}`;
+      parsedStyle.top = `${top}${topUnit}`;
+      parsedStyle.left = `${left}${leftUnit}`;
+      parsedStyle.right = `${right}${rightUnit}`;
+      parsedStyle.bottom = `${bottom}${bottomUnit}`;
       parsedStyle['font-weight'] = Number(parsedStyle['font-weight']);
       webSocket.value.send(JSON.stringify({
         action: 'requestExtension',
@@ -278,7 +273,7 @@ export default {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     })
 
-    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, styles, updateStyle, updateDesignProps, isUpdating, timeoutId, updateAppUrl, handleEnter };
+    return { webSocket, isConnected, isLoading, showSidebar, wsSearchExtensions, appUrl, selectedElement, styles, updateStyle, updateDesignProps, isUpdating, timeoutId, updateAppUrl, handleEnter };
   }
 }
 </script>

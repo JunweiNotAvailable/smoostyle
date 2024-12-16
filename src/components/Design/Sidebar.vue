@@ -12,25 +12,49 @@
     </div>
   </div>
   <div class="sidebar-body">
-    <!-- COLORS -->
-    <div class="style-title">COLORS</div>
+    <!-- SELECTED ELEMENT -->
+    <div class="style-title">SELECTED ELEMENT</div>
+    <div class="style-tool">{{ selectedElement }}</div>
+    <!-- POSITION -->
+    <div class="style-title">POSITION</div>
+    <div class="flex-between style-tool"><div>Position</div><Dropdown :id="'position-dropdown'" :width="'100px'" :options="['absolute', 'fixed', 'relative', 'static', 'sticky']" v-model:selected="styles.position" :onSelect="(value: string) => updateStyle('position', value)" :key="styles.position"/></div>
+    <div class="flex-between style-tool"><div>Top</div><div class="flex-center"><input type="number" :value="styles.top" @change="updateStyle('top', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;"><Dropdown :id="'top-unit-dropdown'" :width="'60px'" :options="['px', '%']" v-model:selected="styles.topUnit" :onSelect="(value: string) => updateStyle('topUnit', value)" :key="styles.topUnit"/></div></div>
+    <div class="flex-between style-tool"><div>Right</div><div class="flex-center"><input type="number" :value="styles.right" @change="updateStyle('right', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;"><Dropdown :id="'right-unit-dropdown'" :width="'60px'" :options="['px', '%']" v-model:selected="styles.rightUnit" :onSelect="(value: string) => updateStyle('rightUnit', value)" :key="styles.rightUnit"/></div></div>
+    <div class="flex-between style-tool"><div>Bottom</div><div class="flex-center"><input type="number" :value="styles.bottom" @change="updateStyle('bottom', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;"><Dropdown :id="'bottom-unit-dropdown'" :width="'60px'" :options="['px', '%']" v-model:selected="styles.bottomUnit" :onSelect="(value: string) => updateStyle('bottomUnit', value)" :key="styles.bottomUnit"/></div></div>
+    <div class="flex-between style-tool"><div>Left</div><div class="flex-center"><input type="number" :value="styles.left" @change="updateStyle('left', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;"><Dropdown :id="'left-unit-dropdown'" :width="'60px'" :options="['px', '%']" v-model:selected="styles.leftUnit" :onSelect="(value: string) => updateStyle('leftUnit', value)" :key="styles.leftUnit"/></div></div>
+    <!-- ALIGNMENT -->
+    <div class="style-title">ALIGNMENT</div>
+    <div class="flex-between style-tool"><div>Display</div><Dropdown :id="'display-dropdown'" :width="'100px'" :options="['block', 'flex', 'none']" v-model:selected="styles.display" :onSelect="(value: string) => updateStyle('display', value)" :key="styles.display"/></div>
+    <div class="flex-between style-tool"><div>Flex direction</div><Dropdown :id="'flex-direction-dropdown'" :width="'100px'" :options="['row', 'column']" v-model:selected="styles.flexDirection" :onSelect="(value: string) => updateStyle('flexDirection', value)" :key="styles.flexDirection"/></div>
+    <div class="flex-between style-tool"><div></div>
+      <div class="flex">
+        <button class="style-tool-button" @click="updateStyle('justifyContent', 'space-between')" :class="styles.justifyContent === 'space-between' ? 'selected' : ''"><img src="@/assets/justify-between.svg" alt="justify-between"></button>
+        <button class="style-tool-button" @click="updateStyle('justifyContent', 'start')" :class="styles.justifyContent === 'start' ? 'selected' : ''"><img src="@/assets/justify-start.svg" alt="justify-start"></button>
+        <button class="style-tool-button" @click="updateStyle('justifyContent', 'center')" :class="styles.justifyContent === 'center' ? 'selected' : ''"><img src="@/assets/justify-center.svg" alt="justify-center"></button>
+        <button class="style-tool-button" @click="updateStyle('justifyContent', 'end')" :class="styles.justifyContent === 'end' ? 'selected' : ''"><img src="@/assets/justify-end.svg" alt="justify-end"></button>
+      </div>
+    </div>
+    <div class="flex-between style-tool"><div></div>
+      <div class="flex">
+        <button class="style-tool-button" @click="updateStyle('alignItems', 'start')" :class="styles.alignItems === 'start' ? 'selected' : ''"><img src="@/assets/align-start.svg" alt="align-start"></button>
+        <button class="style-tool-button" @click="updateStyle('alignItems', 'center')" :class="styles.alignItems === 'center' ? 'selected' : ''"><img src="@/assets/align-center.svg" alt="align-center"></button>
+        <button class="style-tool-button" @click="updateStyle('alignItems', 'end')" :class="styles.alignItems === 'end' ? 'selected' : ''"><img src="@/assets/align-end.svg" alt="align-end"></button>
+      </div>
+    </div>
+    <!-- COLOR -->
+    <div class="style-title">COLOR</div>
     <div class="flex-between style-tool"><div>Background</div><ColorInput :color="styles.backgroundColor" :updateColor="(color: string) => updateStyle('backgroundColor', color)" /></div>
     <div class="flex-between style-tool"><div>Text</div><ColorInput :color="styles.color" :updateColor="(color: string) => updateStyle('color', color)" /></div>
     <div class="flex-between style-tool"><div>Border</div><ColorInput :color="styles.borderColor" :updateColor="(color: string) => updateStyle('borderColor', color)" /></div>
-    <!-- SHAPES -->
-    <div class="style-title">SHAPES</div>
-    <div class="flex-between style-tool"><div>Width</div><div class="flex-center"><input type="number" :value="styles.width" @change="updateStyle('width', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;" :readonly="styles.widthUnit === 'auto'"><Dropdown :id="'width-unit-dropdown'" :width="'60px'" :options="['auto', 'px', '%', 'vw']" :selected="styles.widthUnit" :onSelect="(value: string) => updateStyle('widthUnit', value)"/></div></div>
-    <div class="flex-between style-tool"><div>Height</div><div class="flex-center"><input type="number" :value="styles.height" @change="updateStyle('height', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;" :readonly="styles.heightUnit === 'auto'"><Dropdown :id="'height-unit-dropdown'" :width="'60px'" :options="['auto', 'px', '%', 'vh']" :selected="styles.heightUnit" :onSelect="(value: string) => updateStyle('heightUnit', value)"/></div></div>
-    <div class="flex-between style-tool"><div>Border width</div><input type="number" :value="styles.borderWidth" @change="updateStyle('borderWidth', Number(($event.target as HTMLInputElement).value))"></div>
-    <div class="flex-between style-tool"><div>Border style</div><Dropdown :id="'border-style-dropdown'" :width="'100px'" :options="['solid', 'dashed', 'dotted']" :selected="styles.borderStyle" :onSelect="(value: string) => updateStyle('borderStyle', value)"/></div>
-    <div class="flex-between style-tool"><div>Border radius</div><input type="number" :value="styles.borderRadius" @change="updateStyle('borderRadius', Number(($event.target as HTMLInputElement).value))"></div>
     <!-- FONT -->
     <div class="style-title">FONT</div>
-    <div class="flex-between style-tool"><div>Style</div><Dropdown :id="'font-style-dropdown'" :width="'100px'" :options="['normal', 'underline', 'line-through', 'overline']" :selected="styles.textDecoration" :onSelect="(value: string) => updateStyle('textDecoration', value)"/></div>
-    <div class="flex-between style-tool"><div>Weight</div><Dropdown :id="'font-weight-dropdown'" :width="'100px'" :options="['300', '400', '500', '600', '700', '800']" :selected="styles.fontWeight" :onSelect="(value: string) => updateStyle('fontWeight', value)"/></div>
+    <div class="flex-between style-tool"><div>Style</div><Dropdown :id="'font-style-dropdown'" :width="'100px'" :options="['normal', 'underline', 'line-through', 'overline']" v-model:selected="styles.textDecoration" :onSelect="(value: string) => updateStyle('textDecoration', value)" :key="styles.textDecoration"/></div>
+    <div class="flex-between style-tool"><div>Weight</div><Dropdown :id="'font-weight-dropdown'" :width="'100px'" :options="['300', '400', '500', '600', '700', '800']" v-model:selected="styles.fontWeight" :onSelect="(value: string) => updateStyle('fontWeight', value)" :key="styles.fontWeight"/></div>
     <div class="flex-between style-tool"><div>Size</div><input type="number" :value="styles.fontSize" @change="updateStyle('fontSize', Number(($event.target as HTMLInputElement).value))"></div>
     <!-- SPACING -->
     <div class="style-title">SPACING</div>
+    <div class="flex-between style-tool"><div>Width</div><div class="flex-center"><input type="number" :value="styles.width" @change="updateStyle('width', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;" :readonly="styles.widthUnit === 'auto'"><Dropdown :id="'width-unit-dropdown'" :width="'60px'" :options="['auto', 'px', '%', 'vw']" v-model:selected="styles.widthUnit" :onSelect="(value: string) => updateStyle('widthUnit', value)" :key="styles.widthUnit"/></div></div>
+    <div class="flex-between style-tool"><div>Height</div><div class="flex-center"><input type="number" :value="styles.height" @change="updateStyle('height', Number(($event.target as HTMLInputElement).value))" style="margin-right: 8px; width: 60px;" :readonly="styles.heightUnit === 'auto'"><Dropdown :id="'height-unit-dropdown'" :width="'60px'" :options="['auto', 'px', '%', 'vh']" v-model:selected="styles.heightUnit" :onSelect="(value: string) => updateStyle('heightUnit', value)" :key="styles.heightUnit"/></div></div>
     <div class="flex-between style-tool">
       <div>Padding</div>
       <div class="spacing-tool">
@@ -57,10 +81,18 @@
         </div>
       </div>
     </div>
+    <!-- SHAPE -->
+    <div class="style-title">SHAPE</div>
+    <div class="flex-between style-tool"><div>Border width</div><input type="number" :value="styles.borderWidth" @change="updateStyle('borderWidth', Number(($event.target as HTMLInputElement).value))"></div>
+    <div class="flex-between style-tool"><div>Border style</div><Dropdown :top="true" :id="'border-style-dropdown'" :width="'100px'" :options="['solid', 'dashed', 'dotted']" v-model:selected="styles.borderStyle" :onSelect="(value: string) => updateStyle('borderStyle', value)" :key="styles.borderStyle"/></div>
+    <div class="flex-between style-tool"><div>Border radius</div><input type="number" :value="styles.borderRadius" @change="updateStyle('borderRadius', Number(($event.target as HTMLInputElement).value))"></div>
+    <!-- OVERFLOW -->
+    <div class="style-title">OVERFLOW</div>
+    <div class="flex-between style-tool"><div>Overflow</div><Dropdown :top="true" :id="'overflow-dropdown'" :width="'100px'" :options="['auto', 'visible', 'hidden', 'scroll']" v-model:selected="styles.overflow" :onSelect="(value: string) => updateStyle('overflow', value)" :key="styles.overflow"/></div>
   </div>
 
   <!-- block -->
-  <!-- <div v-if="!isConnected" class="sidebar-block"></div> -->
+  <div v-if="!isConnected" class="sidebar-block"></div>
 </template>
 
 <script lang="ts">
@@ -77,7 +109,7 @@ addIcons(BiLayoutSidebarReverse, HiMenuAlt4);
 export default {
   name: 'Sidebar',
   components: { ColorInput, Dropdown },
-  props: ['styles', 'toggleSidebar', 'isConnected'],
+  props: ['styles', 'toggleSidebar', 'isConnected', 'selectedElement'],
   emits: ['update:styles'],
   setup(props: any, { emit }: any) {
     const store = useStore();
@@ -210,14 +242,17 @@ export default {
 .sidebar-body {
   flex: 1;
   overflow: auto;
+  padding-bottom: 16px;
 }
 .sidebar-body::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
   background: none;
 }
 .sidebar-body::-webkit-scrollbar-thumb {
-  background: #0002;
+  background: #0003;
   border-radius: 1rem;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 .style-title {
   font-weight: 600;
@@ -238,6 +273,25 @@ export default {
 }
 .style-tool input[readonly] {
   color: #888;
+}
+.style-tool-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: .4rem;
+  margin: 0 4px;
+}
+.style-tool-button.selected, .style-tool-button:hover {
+  background: var(--style-input-color);
+}
+.style-tool-button img {
+  width: 56%;
+  height: 56%;
 }
 .spacing-tool {
   display: flex;

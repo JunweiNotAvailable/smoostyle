@@ -1,7 +1,7 @@
 <template>
   <div class="dropdown" :id="id" :style="{ width }">
     <button @click="showOptions = !showOptions">{{ selected }}<i class="fa-solid fa-angle-down"></i></button>
-    <div class="dropdown-options" v-if="showOptions">
+    <div class="dropdown-options" :class="{ 'top': top }" v-if="showOptions">
       <button v-for="option in options" @click="selectOption(option)" :class="{ 'selected': option === selected }">{{ option }}</button>
     </div>
   </div>
@@ -12,11 +12,13 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 export default {
   name: 'Dropdown',
-  props: ['width', 'options', 'selected', 'onSelect', 'id'],
-  setup(props) {
+  props: ['width', 'options', 'selected', 'onSelect', 'id', 'top'],
+  emits: ['update:selected'],
+  setup(props, { emit }) {
     const showOptions = ref(false);
 
     const selectOption = (option) => {
+      emit('update:selected', option);
       props.onSelect(option);
       showOptions.value = false;
     }
@@ -62,6 +64,10 @@ export default {
   overflow: hidden;
   padding: 4px 0;
   z-index: 5;
+}
+.dropdown-options.top {
+  top: auto;
+  bottom: 105%;
 }
 .dropdown-options > button {
   padding: 4px 8px;
