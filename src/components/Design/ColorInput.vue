@@ -6,6 +6,7 @@
       v-model="color"
       @input="updateColor"
       hidePalette
+      
     />
   </div>
 </template>

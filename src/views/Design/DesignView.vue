@@ -83,9 +83,10 @@
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
+        <Canvas :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
+        <!-- <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
         <Loading v-else-if="isLoading" color="#4ca" size="32" />
-        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" />
+        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" /> -->
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
@@ -105,7 +106,7 @@ import NoConnectionDialog from '@/components/Design/NoConnectionDialog.vue';
 import Sidebar from '@/components/Design/Sidebar.vue';
 import Canvas from '@/components/Design/Canvas.vue';
 import Loading from '@/components/Loading.vue';
-import { toHex, toKebabCase } from '@/utils/helpers';
+import { getParsedStyles, toHex, toKebabCase } from '@/utils/helpers';
 
 addIcons(BiLayoutSidebarReverse, BiCloudCheckFill);
 
@@ -131,12 +132,13 @@ export default {
     const isUpdating = ref(false);
 
     watch(() => styles.value, () => {
+      console.log(styles.value);
       if (!isConnected.value || !selectedElement.value) return;
       if (timeoutId.value) clearTimeout(timeoutId.value);
       isUpdating.value = true;
       timeoutId.value = setTimeout(() => {
         // send update message to extension
-        wsUpdateStyle();
+        // wsUpdateStyle();
       }, 2000);
     })
 
@@ -158,7 +160,6 @@ export default {
         bottom: Number(elementStyle.bottom.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, bottomUnit: elementStyle.bottom.includes('%') ? '%' : elementStyle.bottom.includes('vh') ? 'vh' : elementStyle.bottom.includes('vw') ? 'vw' : elementStyle.bottom.includes('px') ? 'px' : 'auto',
         right: Number(elementStyle.right.replace('px', '').replace('%', '').replace('vh', '').replace('vw', '')) || 0, rightUnit: elementStyle.right.includes('%') ? '%' : elementStyle.right.includes('vh') ? 'vh' : elementStyle.right.includes('vw') ? 'vw' : elementStyle.right.includes('px') ? 'px' : 'auto',
       };
-      console.log(styles.value);
     }
 
     // update app url
@@ -229,19 +230,7 @@ export default {
     // update style
     const wsUpdateStyle = () => {
       if (webSocket.value?.readyState !== WebSocket.OPEN) return;
-      let { 
-        widthUnit, heightUnit, width, height,
-        top, left, right, bottom, topUnit, leftUnit, rightUnit, bottomUnit,
-        ...parsedStyle 
-      } = styles.value;
-      parsedStyle = Object.fromEntries(Object.entries(parsedStyle).map(([key, value]) => [toKebabCase(key), typeof value === 'number' ? `${value}px` : value]));
-      parsedStyle.width = widthUnit === 'auto' ? 'auto' : `${width}${widthUnit}`;
-      parsedStyle.height = heightUnit === 'auto' ? 'auto' : `${height}${heightUnit}`;
-      parsedStyle.top = `${top}${topUnit}`;
-      parsedStyle.left = `${left}${leftUnit}`;
-      parsedStyle.right = `${right}${rightUnit}`;
-      parsedStyle.bottom = `${bottom}${bottomUnit}`;
-      parsedStyle['font-weight'] = Number(parsedStyle['font-weight']);
+      const parsedStyle = getParsedStyles(styles.value);
       webSocket.value.send(JSON.stringify({
         action: 'requestExtension',
         data: { targetId: connections.value[0], type: 'update', userId: store.state.user.secretId, element: selectedElement.value, style: parsedStyle }

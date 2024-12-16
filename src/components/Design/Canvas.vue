@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { toKebabCase } from '@/utils/helpers';
+import { getParsedStyles, toKebabCase } from '@/utils/helpers';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 
@@ -35,25 +35,13 @@ export default {
     const isScrolling = ref(false);
 
     watch(() => props.styles, (newStyles) => {
-      let { 
-        widthUnit, heightUnit, width, height,
-        top, left, right, bottom, topUnit, leftUnit, rightUnit, bottomUnit,
-        ...styles 
-      } = newStyles;
-      const iframe = document.getElementById('design-iframe') as HTMLIFrameElement;
-      styles = Object.fromEntries(Object.entries(styles).map(([key, value]) => [toKebabCase(key), typeof value === 'number' ? `${value}px` : value]));
-      styles.width = widthUnit === 'auto' ? 'auto' : `${width}${widthUnit}`;
-      styles.height = heightUnit === 'auto' ? 'auto' : `${height}${heightUnit}`;
-      styles.top = `${top}${topUnit}`;
-      styles.left = `${left}${leftUnit}`;
-      styles.right = `${right}${rightUnit}`;
-      styles.bottom = `${bottom}${bottomUnit}`;
-      styles['font-weight'] = Number(styles['font-weight']);
+      const styles = getParsedStyles(newStyles);
       const message = {
         action: 'applyStyles',
         element: selectedElement.value,
         styles: styles,
       }
+      const iframe = document.getElementById('design-iframe') as HTMLIFrameElement;
       iframe.contentWindow?.postMessage(message, '*');
     });
 
