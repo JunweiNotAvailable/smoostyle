@@ -83,10 +83,9 @@
         <button v-if="!showSidebar" @click="showSidebar = !showSidebar" class="sidebar-toggle-button"><v-icon name="bi-layout-sidebar-reverse" /></button>
       </div>
       <div class="design-body flex-1 flex-center">
-        <Canvas :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
-        <!-- <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
+        <Canvas v-if="isConnected" :src="appUrl" :styles="styles" :updateDesignProps="updateDesignProps" />
         <Loading v-else-if="isLoading" color="#4ca" size="32" />
-        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" /> -->
+        <NoConnectionDialog v-else :searchExtensions="wsSearchExtensions" />
       </div>
     </div>
     <aside :class="{ 'hidden': !showSidebar }">
@@ -138,7 +137,7 @@ export default {
       isUpdating.value = true;
       timeoutId.value = setTimeout(() => {
         // send update message to extension
-        // wsUpdateStyle();
+        wsUpdateStyle();
       }, 2000);
     })
 
