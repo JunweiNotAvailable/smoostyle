@@ -137,7 +137,7 @@ export default {
       timeoutId.value = setTimeout(() => {
         // send update message to extension
         wsUpdateStyle();
-      }, 600);
+      }, 200);
     })
 
     const updateStyle = (newStyles) => {
