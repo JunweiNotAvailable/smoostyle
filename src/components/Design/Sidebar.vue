@@ -28,17 +28,17 @@
     <div class="flex-between style-tool"><div>Flex direction</div><Dropdown :id="'flex-direction-dropdown'" :width="'100px'" :options="['row', 'column']" v-model:selected="styles.flexDirection" :onSelect="(value: string) => updateStyle('flexDirection', value)" :key="styles.flexDirection"/></div>
     <div class="flex-between style-tool"><div></div>
       <div class="flex">
-        <button class="style-tool-button" @click="updateStyle('justifyContent', 'space-between')" :class="styles.justifyContent === 'space-between' ? 'selected' : ''"><img src="@/assets/justify-between.svg" alt="justify-between"></button>
-        <button class="style-tool-button" @click="updateStyle('justifyContent', 'start')" :class="styles.justifyContent === 'start' ? 'selected' : ''"><img src="@/assets/justify-start.svg" alt="justify-start"></button>
-        <button class="style-tool-button" @click="updateStyle('justifyContent', 'center')" :class="styles.justifyContent === 'center' ? 'selected' : ''"><img src="@/assets/justify-center.svg" alt="justify-center"></button>
-        <button class="style-tool-button" @click="updateStyle('justifyContent', 'end')" :class="styles.justifyContent === 'end' ? 'selected' : ''"><img src="@/assets/justify-end.svg" alt="justify-end"></button>
+        <button class="style-tool-button" :style="{ rotate: styles.flexDirection === 'column' ? '90deg' : '0deg' }" @click="updateStyle('justifyContent', 'space-between')" :class="styles.justifyContent === 'space-between' ? 'selected' : ''"><img src="@/assets/justify-between.svg" alt="justify-between"></button>
+        <button class="style-tool-button" :style="{ rotate: styles.flexDirection === 'column' ? '90deg' : '0deg' }" @click="updateStyle('justifyContent', 'start')" :class="styles.justifyContent === 'start' ? 'selected' : ''"><img src="@/assets/justify-start.svg" alt="justify-start"></button>
+        <button class="style-tool-button" :style="{ rotate: styles.flexDirection === 'column' ? '90deg' : '0deg' }" @click="updateStyle('justifyContent', 'center')" :class="styles.justifyContent === 'center' ? 'selected' : ''"><img src="@/assets/justify-center.svg" alt="justify-center"></button>
+        <button class="style-tool-button" :style="{ rotate: styles.flexDirection === 'column' ? '90deg' : '0deg' }" @click="updateStyle('justifyContent', 'end')" :class="styles.justifyContent === 'end' ? 'selected' : ''"><img src="@/assets/justify-end.svg" alt="justify-end"></button>
       </div>
     </div>
     <div class="flex-between style-tool"><div></div>
       <div class="flex">
-        <button class="style-tool-button" @click="updateStyle('alignItems', 'start')" :class="styles.alignItems === 'start' ? 'selected' : ''"><img src="@/assets/align-start.svg" alt="align-start"></button>
-        <button class="style-tool-button" @click="updateStyle('alignItems', 'center')" :class="styles.alignItems === 'center' ? 'selected' : ''"><img src="@/assets/align-center.svg" alt="align-center"></button>
-        <button class="style-tool-button" @click="updateStyle('alignItems', 'end')" :class="styles.alignItems === 'end' ? 'selected' : ''"><img src="@/assets/align-end.svg" alt="align-end"></button>
+        <button class="style-tool-button" :style="{ rotate: styles.flexDirection === 'column' ? '-90deg' : '0deg' }" @click="updateStyle('alignItems', 'start')" :class="styles.alignItems === 'start' ? 'selected' : ''"><img src="@/assets/align-start.svg" alt="align-start"></button>
+        <button class="style-tool-button" :style="{ rotate: styles.flexDirection === 'column' ? '-90deg' : '0deg' }" @click="updateStyle('alignItems', 'center')" :class="styles.alignItems === 'center' ? 'selected' : ''"><img src="@/assets/align-center.svg" alt="align-center"></button>
+        <button class="style-tool-button" :style="{ rotate: styles.flexDirection === 'column' ? '-90deg' : '0deg' }" @click="updateStyle('alignItems', 'end')" :class="styles.alignItems === 'end' ? 'selected' : ''"><img src="@/assets/align-end.svg" alt="align-end"></button>
       </div>
     </div>
     <!-- COLOR -->
